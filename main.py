@@ -1,8 +1,7 @@
 import time, datetime, os, random
 from selenium import webdriver
-#from fake_useragent import UserAgent
+from fake_useragent import UserAgent
 import asyncio
-#from proxybroker2 import Broker
 import data.settings as SETTINFS_FILE #подключаем файл считывания настроек
 
 class MAIN():
@@ -21,7 +20,7 @@ class MAIN():
             links[i]=str(links[i]).split('\n')[0]
         return links
 
-    def save_log(self,url,proxy,agent):
+    def save_log(self,url,proxy=None,agent=None):
         '''Фукция создает директорию для сохранения скриншотов в зависимости от даты. 
         В ней файл с датой в котором будут прописываться попытки подключения. 
         И возвращает путь сохранения скриншота'''
@@ -48,84 +47,60 @@ class MAIN():
         with open(os.path.join(directory, file_name), 'a') as log:
             log.write(f'{time_file} - {url} - {proxy} - {agent}\n')
         return f'{directory}/{time_file}-{str(url).split("//")[1].split("/")[0]}.png'
-    
 
+    def get_chromedriver(self, proxy=None, agent=None):
+        chrome_options = webdriver.ChromeOptions()
+        if agent!=None:  chrome_options.add_argument(f'user-agent={agent}')
+        if proxy!=None:  chrome_options.add_argument(f'--proxy-server={proxy}')
+        driver = webdriver.Chrome(options=chrome_options)
+        return driver
 
-def get_chromedriver(proxy=None, agent=None):
-    chrome_options = webdriver.ChromeOptions()
-    if agent!=None:  chrome_options.add_argument(f'user-agent={agent}')
-    if proxy!=None:  chrome_options.add_argument(f'--proxy-server={proxy}')
-    driver = webdriver.Chrome(options=chrome_options)
-    return driver
+    def main(self):
+        '''Оснавная функция '''
+        limit_proxy=25
+        useragent = UserAgent().random
+        #proxys_list = get_proxys_list(limit=limit_proxy)
+        #Счетчики:
+        counter = 1 # счетчик попыток
+        counter_good=0 # условно удачных посещений
+        counter_list = 1 # счетчик по списку (один для списка)
+        counter_proxy=0 # счетчик для работы со списком прокси
+        while counter_list<3:
+        #    proxy = proxys_list[counter]
+           
+            for url in self.links_list():
+                #driver = get_chromedriver(proxy=proxy, agent=useragent)
+                driver = self.get_chromedriver(agent=useragent)
+                print(f'Попытка №{counter} для списка {counter_list} - {url}',end=' ')
+                try:
+                    driver.get(url=url)
+                    time.sleep(int(self.SETTINGS.get('TIME_PRE_SITE')))#поменять в настройках на 10
+                    #driver.save_screenshot(self.save_log(url,proxy,useragent))
+                    
+                    driver.save_screenshot(self.save_log(url,useragent))
 
-def get_proxys_list(limit=10, countries=None):
-    '''Функция возврощает список прокси. 
-    limit - количество прокси (по умолчанию 10)
-    countries - страна  по умолчанию None, возможны варианты: US,JP,SG,FR,BN,BR,RU)
-    
-    '''
-    pass
-    '''
-    print('Формируем список актуальных proxy в количестве:',limit)
-    proxys_list=[]    
-    async def show(proxies):
-        while True:
-            proxy = await proxies.get()
-            if proxy is None: break
-            #print('Found proxy: %s' % proxy)
-            #print(f'{proxy.host}:{proxy.port}')
-            
-            new_proxy=f'{proxy.host}:{proxy.port}'.split()[0]
-            if new_proxy!= '':
-                #print('\t',new_proxy)
-                proxys_list.append(new_proxy)
+                    time.sleep(int(self.SETTINGS.get('TIME_IN_SITE')))#поменять в настройках на 2
+                    counter_good+=1
+                    print('GOOD!',end='')
+                except Exception as ex:
+                    print('BAD', end='')#,proxy)
+                finally:
+                    driver.quit()
+                    print()
+                
+                counter+=1
+            print(f'УДАЧНЫХ посещений - {counter_good}')
+            useragent = UserAgent().random    
 
-    proxies = asyncio.Queue()
-    broker = Broker(proxies)
-    tasks = asyncio.gather(
-        broker.find(types=['HTTP','HTTPS'], limit=limit, countries=countries),
-        show(proxies))
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(tasks) 
-    return proxys_list
-    '''
-def main(visit=5):
-    ''''''
-    '''
-     limit_proxy=25
-    useragent = UserAgent().random
-    proxys_list = get_proxys_list(limit=limit_proxy)
-
-    counter=0
-    visit_counter=0
-    while visit_counter<visit:
-        proxy = proxys_list[counter]
-        driver = get_chromedriver(proxy=proxy, agent=useragent)
-        try:
-
-            driver.get(url=url)
-            time.sleep(10)
-            driver.save_screenshot(save_log(url,proxy,useragent))
-            time .sleep(2)
-            counter+=1
-            visit_counter+=1
-        except Exception as ex:
-            #print(ex)
-            print(f'Отказ proxy #{counter}:',proxy)
-            counter+=1
-        finally:
-            driver.quit()
-            useragent = UserAgent().random
-        if counter==limit_proxy:
-            counter=0
-            proxys_list = get_proxys_list(limit=limit_proxy)
-    '''
-    pass    
+            counter_list+=1
+            counter_proxy+=1
+            if counter_proxy==limit_proxy:
+                counter_proxy=0
+                #proxys_list = get_proxys_list(limit=limit_proxy)
 
 
 if __name__ == "__main__":
     print('-'*50,'START','-'*50)
     #print()
-    app=MAIN()  
+    app=MAIN().main()
     print('='*50,'FINISH','='*50)

@@ -1,4 +1,5 @@
 #from fp.fp import FreeProxy
+#from proxybroker2 import Broker
 '''
 def give_proxy():
     #https://pypi.org/project/free-proxy/
@@ -55,3 +56,36 @@ def brouser(url):
             driver.close()
             driver.quit()
 '''
+
+def get_proxys_list(limit=10, countries=None):
+    '''Функция возврощает список прокси. 
+    limit - количество прокси (по умолчанию 10)
+    countries - страна  по умолчанию None, возможны варианты: US,JP,SG,FR,BN,BR,RU)
+    
+    '''
+    pass
+    '''
+    print('Формируем список актуальных proxy в количестве:',limit)
+    proxys_list=[]    
+    async def show(proxies):
+        while True:
+            proxy = await proxies.get()
+            if proxy is None: break
+            #print('Found proxy: %s' % proxy)
+            #print(f'{proxy.host}:{proxy.port}')
+            
+            new_proxy=f'{proxy.host}:{proxy.port}'.split()[0]
+            if new_proxy!= '':
+                #print('\t',new_proxy)
+                proxys_list.append(new_proxy)
+
+    proxies = asyncio.Queue()
+    broker = Broker(proxies)
+    tasks = asyncio.gather(
+        broker.find(types=['HTTP','HTTPS'], limit=limit, countries=countries),
+        show(proxies))
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(tasks) 
+    return proxys_list
+    '''

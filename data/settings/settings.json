@@ -1,5 +1,6 @@
 {
-  "TIME_IN_SITE": 2,
+  "DIRECTORY_LOGS" : "data/Logs",
   "LENGHT_PROXYS_LIST": 40,
-  "DIRECTORY_LOGS" : "data/Logs"
+  "TIME_PRE_SITE": 5,
+  "TIME_IN_SITE": 3
 }

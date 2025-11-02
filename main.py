@@ -1,4 +1,4 @@
-import time, datetime, os, random
+import time, datetime, os, platform
 from selenium import webdriver
 from fake_useragent import UserAgent
 import data.settings as SETTINFS_FILE #подключаем файл считывания настроек
@@ -8,10 +8,17 @@ class MAIN():
     def __init__(self):
         '''Основной класс работы программы'''
         #переменная для обращения к настройкам
+        self.get_platform()
         self.SETTINGS=SETTINFS_FILE.Settings()
         self.PROXYS=PROXYS.Proxys()
         self.LINKS=self.links_list()
    
+    def get_platform(self):
+        self.SYMBOL='/'
+        if platform.system() == 'Windows': 
+            self.SYMBOL='\\'
+
+
     def links_list(self):
         '''Функция возвращает список ссылок считанных из файла'''
         file=open('data/settings/links_list.txt')
@@ -31,14 +38,16 @@ class MAIN():
         time_file=str(now.time()).split('.')[0]
 
         year=str(now.year)
-        if now.month<10: month=f'0{now.month}'
+        if now.month<10: month=f'0{str(now.month)}'
         else: month=str(now.month)
-        if now.day<10: day=f'0{now.day}'
+        if now.day<10: day=f'0{str(now.day)}'
         else: day=str(now.day)
-        directory=f'{dir_path}/{self.SETTINGS.get("DIRECTORY_LOGS")}'
+        #directory=f'{dir_path}/{self.SETTINGS.get("DIRECTORY_LOGS")}'
+        directory=f'{dir_path}{self.SYMBOL}{self.SETTINGS.get("DIRECTORY_LOGS")}'
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        directory=f'{dir_path}/{self.SETTINGS.get("DIRECTORY_LOGS")}/{year}-{month}-{day}'    
+        #directory=f'{dir_path}/{self.SETTINGS.get("DIRECTORY_LOGS")}/{year}-{month}-{day}'
+        directory=f'{dir_path}{self.SYMBOL}{self.SETTINGS.get("DIRECTORY_LOGS")}{self.SYMBOL}{year}-{month}-{day}'    
         #print('директория определена')
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -46,7 +55,7 @@ class MAIN():
         file_name=f'{day}.{month}.{year}.txt'
         with open(os.path.join(directory, file_name), 'a') as log:
             log.write(f'{time_file} - {url} - {proxy} - {agent}\n')
-        return f'{directory}/{time_file}-{str(url).split("//")[1].split("/")[0]}.png'
+        return f'{directory}{self.SYMBOL}{time_file.split(":")[0]}.{time_file.split(":")[1]}.{time_file.split(":")[2]}-{str(url).split("//")[1].split("/")[0]}.png'
 
 
     def get_chromedriver(self, proxy=None, agent=None):
@@ -74,9 +83,9 @@ class MAIN():
         counter_good=0 # условно удачных посещений
         counter_list = 1 # счетчик по списку (один для списка)
         counter_proxy=0 # счетчик для работы со списком прокси
-        while counter_list<3:
-            proxy = proxys_list[counter_proxy]
+        while True:#counter_list<3:
             for url in self.links_list():
+                proxy = proxys_list[counter_proxy]
                 driver = self.get_chromedriver(proxy=proxy, agent=useragent)
                 print(f'Попытка №{counter} для списка {counter_list} - {url}',end=' ')
                 try:
@@ -87,19 +96,19 @@ class MAIN():
                     counter_good+=1
                     print('GOOD!',end='')
                 except Exception as ex:
-                    print('BAD', 'PROXY=',proxy, end='')
-                    #counter_proxy+=1
+                    print('BAD', ',PROXY =',proxy, end='')
+                    counter_proxy+=1
                 finally:
                     driver.quit()
                     print()
                 counter+=1
+                if counter_proxy==self.SETTINGS.get('LENGHT_PROXYS_LIST'):
+                    counter_proxy=0
+                    self.new_proxy_list()
             print(f'УДАЧНЫХ посещений - {counter_good}')
             useragent = UserAgent().random    
             counter_list+=1
             counter_proxy+=1
-            if counter_proxy==self.SETTINGS.get('LENGHT_PROXYS_LIST'):
-                counter_proxy=0
-                self.new_proxy_list()
 
 if __name__ == "__main__":
     print('-'*50,'START','-'*50)

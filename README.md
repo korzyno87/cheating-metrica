@@ -22,8 +22,7 @@
 ```bash
     pip install selenium
     pip install fake-useragent
-    $ pip install git+https://github.com/bluet/proxybroker2.git
-    #pip install proxybroker2 не тот
+    pip install git+https://github.com/bluet/proxybroker2.git
 ```
 
 

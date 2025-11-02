@@ -16,11 +16,14 @@
 * 'Python 3.11.3'
 * 'selenium'
 * 'fake-useragent'
+* 'proxybroker2'
 
 ### Установка дополнительных библиотек
 ```bash
     pip install selenium
     pip install fake-useragent
+    $ pip install git+https://github.com/bluet/proxybroker2.git
+    #pip install proxybroker2 не тот
 ```
 
 

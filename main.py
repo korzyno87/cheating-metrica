@@ -68,6 +68,8 @@ class MAIN():
     def new_proxy_list(self):
         if self.SETTINGS.get('DEFAULT_PROXY') == 'proxybroker2':
            proxys_list = self.PROXYS.get_proxys_list_proxybroker2(limit=self.SETTINGS.get("LENGHT_PROXYS_LIST"))
+        if self.SETTINGS.get('DEFAULT_PROXY') == 'FreeProxy':
+           proxys_list = self.PROXYS.get_proxys_list_FreeProxy(limit=self.SETTINGS.get("LENGHT_PROXYS_LIST"))   
            #попробовать передалать в f строку
            #proxys_list =f'self.PROXYS.get_proxys_list_{self.SETTINGS.get('DEFAULT_PROXY')}(limit={self.SETTINGS.get("LENGHT_PROXYS_LIST")})'
            #f''get_proxys_list(limit=limit_proxy)
@@ -98,6 +100,7 @@ class MAIN():
                 except Exception as ex:
                     print('BAD', ',PROXY =',proxy, end='')
                     counter_proxy+=1
+                    #print('proxy counter!=',counter_proxy)
                 finally:
                     driver.quit()
                     print()
@@ -109,6 +112,10 @@ class MAIN():
             useragent = UserAgent().random    
             counter_list+=1
             counter_proxy+=1
+            if counter_proxy==self.SETTINGS.get('LENGHT_PROXYS_LIST'):
+                counter_proxy=0
+                self.new_proxy_list()
+            #print('proxy counter!!=',counter_proxy)
 
 if __name__ == "__main__":
     print('-'*50,'START','-'*50)

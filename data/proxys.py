@@ -1,5 +1,5 @@
-#from fp.fp import FreeProxy
 from proxybroker import Broker
+from fp.fp import FreeProxy
 import asyncio
 
 class Proxys():
@@ -14,18 +14,15 @@ class Proxys():
         limit - количество прокси (по умолчанию 10)
         countries - страна  по умолчанию None, возможны варианты: US,JP,SG,FR,BN,BR,RU)
         '''
-        print('Формируем список актуальных proxy в количестве:',limit)
+        print('Формируем список актуальных proxy от proxybroker2 в количестве:',limit)
         proxys_list=[]    
         async def show(proxies):
             while True:
                 proxy = await proxies.get()
                 if proxy is None: break
-                #print('Found proxy: %s' % proxy)
-                #print(f'{proxy.host}:{proxy.port}')
                 
                 new_proxy=f'{proxy.host}:{proxy.port}'.split()[0]
                 if new_proxy!= '':
-                   # print('\t',new_proxy)
                     proxys_list.append(new_proxy)
         
         proxies = asyncio.Queue()
@@ -40,23 +37,27 @@ class Proxys():
         return proxys_list
     
 
+    def get_proxys_list_FreeProxy(self, limit=10, rand=True, https=False, anonym=True, timeout=0.4):
+        '''Функция возврощает список прокси. 
+        limit - количество прокси (по умолчанию 10);
+        rand - получение прокси случайным образом, возможны варианты: True, False;
+        https - c поддержкой https, возможны варианты: True, False;
+        anonym - анонимный, возможны варианты: True, False;
+        timeout - время отклика не больше)
+        '''
+        #https://pypi.org/project/free-proxy/
+        print('Формируем список актуальных proxy от FreeProxy в количестве:',limit)
+        proxys_list=[] 
+        counter=0
+        while counter<limit:
+            try:
+                proxy = FreeProxy(rand=rand, https=https, anonym=anonym, timeout=timeout).get()
+                counter+=1
+                proxys_list.append(proxy)
+            except:
+                pass    
+        return proxys_list
 '''
-def give_proxy():
-    #https://pypi.org/project/free-proxy/
-    print('Получаем прокси')
-    proxy=''
-    counter_proxy=0
-    while proxy=='':
-        try:
-            proxy = FreeProxy(rand=True, https=False, anonym=True, timeout=0.4).get()
-            #proxy = FreeProxy().get()
-            print('\t',proxy)
-        except:
-            counter_proxy+=1
-            print(f'\t{counter_proxy} попытка получения прокси завершилась неудачно')
-            pass
-    return str(proxy).split('//')[1]
-
 def give_proxy_list(index):
     
     with open('Settings/proxy', 'r') as file_proxy:
@@ -97,9 +98,9 @@ def brouser(url):
             driver.quit()
 '''
 
-
 if __name__ == "__main__":
     print('-'*50,'START','-'*50)
-    app=Proxys().get_proxys_list_proxybroker2()
+    #app=Proxys().get_proxys_list_proxybroker2()
+    app=Proxys().get_proxys_list_FreeProxy()
     print(app)
     print('='*50,'FINISH','='*50)

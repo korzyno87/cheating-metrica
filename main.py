@@ -1,4 +1,4 @@
-import time, datetime, os, platform
+import time, datetime, os, platform, random
 from selenium import webdriver
 from fake_useragent import UserAgent
 import data.settings as SETTINFS_FILE #подключаем файл считывания настроек
@@ -66,6 +66,12 @@ class MAIN():
         return driver
 
     def new_proxy_list(self):
+        if self.SETTINGS.get('DEFAULT_PROXY') =='random':
+            prox_random=['proxybroker2','FreeProxy']
+            choice=random.choice(prox_random)
+            if choice == 'proxybroker2':    proxys_list = self.PROXYS.get_proxys_list_proxybroker2(limit=self.SETTINGS.get("LENGHT_PROXYS_LIST"))
+            if choice == 'FreeProxy':   proxys_list = self.PROXYS.get_proxys_list_FreeProxy(limit=self.SETTINGS.get("LENGHT_PROXYS_LIST"))
+
         if self.SETTINGS.get('DEFAULT_PROXY') == 'proxybroker2':
            proxys_list = self.PROXYS.get_proxys_list_proxybroker2(limit=self.SETTINGS.get("LENGHT_PROXYS_LIST"))
         if self.SETTINGS.get('DEFAULT_PROXY') == 'FreeProxy':

@@ -62,7 +62,10 @@ class MAIN():
         chrome_options = webdriver.ChromeOptions()
         if agent!=None:  chrome_options.add_argument(f'user-agent={agent}')
         if proxy!=None:  chrome_options.add_argument(f'--proxy-server={proxy}')
+        #блокировка всплывающих окон
+        chrome_options.add_argument('--disable-notifications')
         driver = webdriver.Chrome(options=chrome_options)
+        if self.SETTINGS.get('ROLL_UP') == 'True':   driver.minimize_window()
         return driver
 
     def new_proxy_list(self):
@@ -95,6 +98,7 @@ class MAIN():
             for url in self.links_list():
                 proxy = proxys_list[counter_proxy]
                 driver = self.get_chromedriver(proxy=proxy, agent=useragent)
+
                 print(f'Попытка №{counter} для списка {counter_list} - {url}',end=' ')
                 try:
                     driver.get(url=url)

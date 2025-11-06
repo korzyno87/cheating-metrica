@@ -3,5 +3,6 @@
   "DEFAULT_PROXY" : "random",
   "LENGHT_PROXYS_LIST": 40,
   "TIME_PRE_SITE": 5,
-  "TIME_IN_SITE": 2
+  "TIME_IN_SITE": 2,
+  "ROLL_UP": "True"
 }

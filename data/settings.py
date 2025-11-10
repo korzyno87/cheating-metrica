@@ -2,7 +2,7 @@ import json
 
 
 class Settings:
-    def __init__(self, file_settings="data\settings\settings.json"):
+    def __init__(self, file_settings="data/settings/settings.json"):
         """Класс настроек, используеться для получения настроек"""
         self.SETTINGS = json.load(open(file_settings))
 

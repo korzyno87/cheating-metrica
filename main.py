@@ -121,11 +121,11 @@ class MAIN:
                     driver.get(url=url)
                     time.sleep(
                         int(self.SETTINGS.get("TIME_PRE_SITE"))
-                    )  # поменять в настройках на 10
+                    )  
                     driver.save_screenshot(self.save_log(url, proxy, useragent))
                     time.sleep(
                         int(self.SETTINGS.get("TIME_IN_SITE"))
-                    )  # поменять в настройках на 2
+                    ) 
                     counter_good += 1
                     print("GOOD!", end="")
                 except Exception as ex:

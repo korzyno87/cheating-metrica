@@ -39,7 +39,7 @@ class Proxys:
         try:
             loop.run_until_complete(asyncio.wait_for(tasks, 30))
         except asyncio.TimeoutError:
-            print("RETRYING PROXIES ...")
+            print("RETRYING PROXIES ...")#ПОВТОРНЫЙ ЗАПУСК ПРОКСИ-СЕРВЕРОВ ...
 
         return proxys_list
 

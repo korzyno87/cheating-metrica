@@ -31,8 +31,13 @@ class Proxys():
             broker.find(types=['HTTP','HTTPS'], limit=limit, countries=countries),
             show(proxies))
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(tasks) 
+        loop = asyncio.get_event_loop()   
+        try:
+            loop.run_until_complete(asyncio.wait_for(tasks, 30))
+        except asyncio.TimeoutError:
+            print("RETRYING PROXIES ...")
+        #loop = asyncio.get_event_loop()
+        #loop.run_until_complete(tasks) 
         
         return proxys_list
     

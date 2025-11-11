@@ -1,6 +1,7 @@
 import time, datetime, os, platform, random
 from selenium import webdriver
 from fake_useragent import UserAgent
+import requests
 import data.settings as SETTINFS_FILE  # подключаем файл считывания настроек
 import data.proxys as PROXYS  # Подключаем файл для работы с прокси
 
@@ -26,6 +27,22 @@ class MAIN:
         for i in range(len(links)):
             links[i] = str(links[i]).split("\n")[0]
         return links
+
+    def get_status_code(self, url, proxy=None, agent=None):
+        """Функция возвращает статус код посещения сайта с параметрами proxy и agent"""
+        proxies = {
+            "http": proxy,
+            "https": proxy,
+        }
+        headers = {"User-Agent": agent}
+        response = requests.get(
+            url,
+            proxies=proxies,
+            headers=headers,
+            timeout=self.SETTINGS.get("TIME_PRE_SITE"),
+        )
+        #print(response.status_code)
+        return response.status_code
 
     def save_log(self, url, proxy=None, agent=None):
         """Фукция создает директорию для сохранения скриншотов в зависимости от даты.
@@ -119,13 +136,11 @@ class MAIN:
                 print(f"Попытка №{counter} для списка {counter_list} - {url}", end=" ")
                 try:
                     driver.get(url=url)
-                    time.sleep(
-                        int(self.SETTINGS.get("TIME_PRE_SITE"))
-                    )  
+                    # таймаут в проверке статус кода
+                    # time.sleep(int(self.SETTINGS.get("TIME_PRE_SITE")))
+                    self.get_status_code(url, proxy, useragent)
                     driver.save_screenshot(self.save_log(url, proxy, useragent))
-                    time.sleep(
-                        int(self.SETTINGS.get("TIME_IN_SITE"))
-                    ) 
+                    time.sleep(int(self.SETTINGS.get("TIME_IN_SITE")))
                     counter_good += 1
                     print("GOOD!", end="")
                 except Exception as ex:
@@ -136,14 +151,14 @@ class MAIN:
                     driver.quit()
                     print()
                 counter += 1
-                if counter_proxy == self.SETTINGS.get("LENGHT_PROXYS_LIST"):
+                if counter_proxy >= self.SETTINGS.get("LENGHT_PROXYS_LIST"):
                     counter_proxy = 0
                     self.new_proxy_list()
             print(f"УДАЧНЫХ посещений - {counter_good}")
             useragent = UserAgent().random
             counter_list += 1
             counter_proxy += 1
-            if counter_proxy == self.SETTINGS.get("LENGHT_PROXYS_LIST"):
+            if counter_proxy >= self.SETTINGS.get("LENGHT_PROXYS_LIST"):
                 counter_proxy = 0
                 self.new_proxy_list()
             # print('proxy counter!!=',counter_proxy)

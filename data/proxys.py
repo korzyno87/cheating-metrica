@@ -40,7 +40,7 @@ class Proxys:
             loop.run_until_complete(asyncio.wait_for(tasks, 30))
         except asyncio.TimeoutError:
             print("RETRYING PROXIES ...")#ПОВТОРНЫЙ ЗАПУСК ПРОКСИ-СЕРВЕРОВ ...
-
+        print(len(proxys_list))
         return proxys_list
 
     def get_proxys_list_FreeProxy(
@@ -112,7 +112,7 @@ def brouser(url):
 
 if __name__ == "__main__":
     print("-" * 50, "START", "-" * 50)
-    # app=Proxys().get_proxys_list_proxybroker2()
-    app = Proxys().get_proxys_list_FreeProxy()
+    app=Proxys().get_proxys_list_proxybroker2()
+    #app = Proxys().get_proxys_list_FreeProxy()
     print(app)
     print("=" * 50, "FINISH", "=" * 50)

@@ -25,6 +25,7 @@
     pip install fake-useragent
     pip install git+https://github.com/bluet/proxybroker2.git
     pip install free-proxy
+    pip install requests
 ```
 
 

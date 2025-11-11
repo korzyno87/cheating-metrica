@@ -41,7 +41,7 @@ class MAIN:
             headers=headers,
             timeout=self.SETTINGS.get("TIME_PRE_SITE"),
         )
-        #print(response.status_code)
+        # print(response.status_code)
         return response.status_code
 
     def save_log(self, url, proxy=None, agent=None):
